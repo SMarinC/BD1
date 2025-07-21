@@ -6,9 +6,8 @@ include "../includes/header.php";
 <h1 class="mt-3">Búsqueda 2</h1>
 
 <p class="mt-3">
-    Dos números enteros n1 y n2, n1 ≥ 0, n2 > n1. Se debe mostrar el nit y el 
-    nombre de todas las empresas que han revisado entre n1 y n2 proyectos
-    (intervalo cerrado [n1, n2]).
+    El código de una Maquina. Se debe mostrar todos los datos del contrato
+    asociado al mecánico que inspecciono (mecánico Inspector) dicha reparación.
 </p>
 
 <!-- FORMULARIO. Cambiar los campos de acuerdo a su trabajo -->
@@ -18,13 +17,32 @@ include "../includes/header.php";
     <form action="busqueda2.php" method="post" class="form-group">
 
         <div class="mb-3">
-            <label for="numero1" class="form-label">Numero 1</label>
-            <input type="number" class="form-control" id="numero1" name="numero1" required>
-        </div>
+            <label for="codigoMaquina" class="form-label">Código de la maquina</label>
+            <select id="codigoMaquina" name="codigoMaquina" class="form-select" >
 
-        <div class="mb-3">
-            <label for="numero2" class="form-label">Numero 2</label>
-            <input type="number" class="form-control" id="numero2" name="numero2" required>
+                <!-- Option por defecto -->
+                <option value="" selected disabled hidden></option>
+
+                <?php
+                // Importar el código del otro archivo
+                require("../maquina/maquina_select.php");
+                
+                // Verificar si llegan datos
+                if($resultadoMaquina):
+
+                    // Iterar sobre los registros que llegaron
+                    foreach ($resultadoMaquina as $fila):
+                ?>
+
+                <!-- Opción que se genera -->
+                <option value="<?= $fila["codigo"]; ?>"> codigo <?= $fila["codigo"]; ?></option>
+
+                <?php
+                        // Cerrar los estructuras de control
+                    endforeach;
+                endif;
+                ?>
+            </select>
         </div>
 
         <button type="submit" class="btn btn-primary">Buscar</button>
@@ -40,11 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
     // Crear conexión con la BD
     require('../config/conexion.php');
 
-    $numero1 = $_POST["numero1"];
-    $numero2 = $_POST["numero2"];
+    $codigoMaquina = $_POST["codigoMaquina"];
 
-    // Query SQL a la BD -> Crearla acá (No está completada, cambiarla a su contexto y a su analogía)
-    $query = "SELECT nit, nombre FROM empresa";
+    // Query SQL a la BD -> Crearla acá (No está completada, cambiarla a su contexto y a su analogía) VIOLETAAAAAAAAAAAAAAAAAAA AQUI EL QUERY
+    $query = "SELECT * FROM contrato";
 
     // Ejecutar la consulta
     $resultadoB2 = mysqli_query($conn, $query) or die(mysqli_error($conn));
@@ -63,8 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
         <!-- Títulos de la tabla, cambiarlos -->
         <thead class="table-dark">
             <tr>
-                <th scope="col" class="text-center">Cédula</th>
-                <th scope="col" class="text-center">Celular</th>
+                <th scope="col" class="text-center">Código</th>
+                <th scope="col" class="text-center">Tipo</th>
+                <th scope="col" class="text-center">Salario</th>
+                <th scope="col" class="text-center">Fecha de inicio</th>
+                <th scope="col" class="text-center">Fecha de liquidación</th>
             </tr>
         </thead>
 
@@ -78,8 +98,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
             <!-- Fila que se generará -->
             <tr>
                 <!-- Cada una de las columnas, con su valor correspondiente -->
-                <td class="text-center"><?= $fila["cedula"]; ?></td>
-                <td class="text-center"><?= $fila["celular"]; ?></td>
+                <td class="text-center"><?= $fila["codigo"]; ?></td>
+                <td class="text-center"><?= $fila["tipo"]; ?></td>
+                <td class="text-center">$<?= $fila["salario"]; ?></td>
+                <td class="text-center"> <?= $fila["fechaInicio"]; ?></td>
+                <td class="text-center"> <?= $fila["fechaLiquidacion"]; ?></td>
             </tr>
 
             <?php

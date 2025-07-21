@@ -6,9 +6,10 @@ include "../includes/header.php";
 <h1 class="mt-3">Búsqueda 1</h1>
 
 <p class="mt-3">
-    Dos fechas f1 y f2 (cada fecha con día, mes y año), f2 ≥ f1 y un número entero n,
-    n ≥ 0. Se debe mostrar la cédula y el celular de todos los clientes que han 
-    revisado exactamente n proyectos en dicho rango de fechas [f1, f2].
+    El código de un contrato. Se debe mostrar todas las maquinas que fueron reparadas
+    por el mecánico asociado a dicho contrato pero siempre y cuando la fecha de dichas
+    reparaciones esté por fuera del intervalo de fechas de dicho contrato. (Esto significa que
+    fueron reparaciones ejecutadas por el mecánico cuando no tenía contrato).
 </p>
 
 <!-- FORMULARIO. Cambiar los campos de acuerdo a su trabajo -->
@@ -18,20 +19,34 @@ include "../includes/header.php";
     <form action="busqueda1.php" method="post" class="form-group">
 
         <div class="mb-3">
-            <label for="fecha1" class="form-label">Fecha 1</label>
-            <input type="date" class="form-control" id="fecha1" name="fecha1" required>
-        </div>
+            <label for="codigoContrato" class="form-label">Código del contrato</label>
+            <select id="codigoContrato" name="codigoContrato" class="form-select" >
 
-        <div class="mb-3">
-            <label for="fecha2" class="form-label">Fecha 2</label>
-            <input type="date" class="form-control" id="fecha2" name="fecha2" required>
-        </div>
+                <!-- Option por defecto -->
+                <option value="" selected disabled hidden></option>
 
-        <div class="mb-3">
-            <label for="numero" class="form-label">Número</label>
-            <input type="number" class="form-control" id="numero" name="numero" required>
-        </div>
+                <?php
+                // Importar el código del otro archivo
+                require("../contrato/contrato_select.php");
+                
+                // Verificar si llegan datos
+                if($resultadoContrato):
 
+                    // Iterar sobre los registros que llegaron
+                    foreach ($resultadoContrato as $fila):
+                ?>
+
+                <!-- Opción que se genera -->
+                <option value="<?= $fila["codigo"]; ?>"> codigo <?= $fila["codigo"]; ?></option>
+
+                <?php
+                        // Cerrar los estructuras de control
+                    endforeach;
+                endif;
+                ?>
+            </select>
+        </div>
+        
         <button type="submit" class="btn btn-primary">Buscar</button>
 
     </form>
@@ -45,12 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
     // Crear conexión con la BD
     require('../config/conexion.php');
 
-    $fecha1 = $_POST["fecha1"];
-    $fecha2 = $_POST["fecha2"];
-    $numero = $_POST["numero"];
+    $codigoContrato = $_POST["codigoContrato"];
 
-    // Query SQL a la BD -> Crearla acá (No está completada, cambiarla a su contexto y a su analogía)
-    $query = "SELECT cedula, celular FROM cliente";
+    // Query SQL a la BD -> Crearla acá (No está completada, cambiarla a su contexto y a su analogía) VIOLETAAAAAAAAAAAAAAAAAAAAAA AQUI VA EL QUERY
+    $query = "SELECT * FROM maquina";
 
     // Ejecutar la consulta
     $resultadoB1 = mysqli_query($conn, $query) or die(mysqli_error($conn));
@@ -69,8 +82,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
         <!-- Títulos de la tabla, cambiarlos -->
         <thead class="table-dark">
             <tr>
-                <th scope="col" class="text-center">Cédula</th>
-                <th scope="col" class="text-center">Celular</th>
+                <th scope="col" class="text-center">Código</th>
+                <th scope="col" class="text-center">Nombre</th>
+                <th scope="col" class="text-center">Fabricante</th>
+                <th scope="col" class="text-center">Precio</th>
+                <th scope="col" class="text-center">Fecha de adquisición</th>
+                <th scope="col" class="text-center">Descripción</th>
+                <th scope="col" class="text-center">Fecha de inspección</th>
+                <th scope="col" class="text-center">fecha de reparación</th>
+                <th scope="col" class="text-center">Mecanico inspector ID</th>
+                <th scope="col" class="text-center">Mecanico reparador ID</th>
             </tr>
         </thead>
 
@@ -84,8 +105,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
             <!-- Fila que se generará -->
             <tr>
                 <!-- Cada una de las columnas, con su valor correspondiente -->
-                <td class="text-center"><?= $fila["cedula"]; ?></td>
-                <td class="text-center"><?= $fila["celular"]; ?></td>
+                <td class="text-center"><?= $fila["codigo"]; ?></td>
+                <td class="text-center"><?= $fila["nombre"]; ?></td>
+                <td class="text-center"><?= $fila["fabricante"]; ?></td>
+                <td class="text-center">$<?= $fila["precio"]; ?></td>
+                <td class="text-center"><?= $fila["fechaAdquisicion"]; ?></td>
+                <td class="text-center"><?= $fila["descripcion"]; ?></td>
+                <td class="text-center"><?= $fila["fechaInspeccion"]; ?></td>
+                <td class="text-center"><?= $fila["fechaUltimaReparacion"]; ?></td>
+                <td class="text-center"><?= $fila["mecanicoInspeccionId"]; ?></td>
+                <td class="text-center"><?= $fila["mecanicoReparacionId"]; ?></td>
             </tr>
 
             <?php
