@@ -33,5 +33,6 @@ CREATE TABLE maquina(
   FOREIGN KEY(mecanicoReparacionId) REFERENCES mecanico(codigo),
   CHECK (mecanicoInspeccionId <> mecanicoReparacionId)
   CHECK(codigo > 0 AND precio > 0)
-  CHECK (fechaUltimareparacion > fechaInspeccion AND fechaInspeccion >= fechaAdquision) 
+  CHECK (fechaUltimareparacion > fechaInspeccion AND fechaInspeccion >= fechaAdquision)
+  UNIQUE(nombre, fabricante, fechaAdquisicion)
 )
