@@ -4,7 +4,8 @@ CREATE TABLE mecanico(
   telefono INT(10) NOT NULL UNIQUE, 
   especialidad VARCHAR(50) NOT NULL,
   codigoContrato INT(10) UNIQUE,
-  FOREIGN KEY(codigoContrato) REFERENCES contrato(codigo)  	
+  FOREIGN KEY(codigoContrato) REFERENCES contrato(codigo)
+  CHECK(codigo > 0 AND telefono > 0)
 );
 
 CREATE TABLE  contrato(
@@ -13,6 +14,8 @@ CREATE TABLE  contrato(
   salario INT(10) NOT NULL,
   fechaInicio DATE NOT NULL,
   fechaLiquidacion DATE NOT NULL,
+  CHECK(codigo > 0 AND salario > 0)
+  CHECK (fechaLiquidacion > fechaInicio)
 );
 
 CREATE TABLE maquina(
@@ -29,4 +32,6 @@ CREATE TABLE maquina(
   FOREIGN KEY(mecanicoInspeccionId) REFERENCES mecanico(codigo),
   FOREIGN KEY(mecanicoReparacionId) REFERENCES mecanico(codigo),
   CHECK (mecanicoInspeccionId <> mecanicoReparacionId)
+  CHECK(codigo > 0 AND precio > 0)
+  CHECK (fechaUltimareparacion > fechaInspeccion AND fechaInspeccion >= fechaAdquision) 
 )
