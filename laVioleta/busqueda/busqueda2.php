@@ -6,7 +6,7 @@ include "../includes/header.php";
 <h1 class="mt-3">Búsqueda 2</h1>
 
 <p class="mt-3">
-    El código de una Maquina. Se debe mostrar todos los datos del contrato
+    El código de una Máquina. Se debe mostrar todos los datos del contrato
     asociado al mecánico que inspecciono (mecánico Inspector) dicha reparación.
 </p>
 
@@ -61,7 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
     $codigoMaquina = $_POST["codigoMaquina"];
 
     // Query SQL a la BD -> Crearla acá (No está completada, cambiarla a su contexto y a su analogía) VIOLETAAAAAAAAAAAAAAAAAAA AQUI EL QUERY
-    $query = "SELECT * FROM contrato";
+    $query = "SELECT maquina.mecanicoInspeccionId,mecanico.nombre,contrato.codigo, contrato.tipo, 
+                     contrato.salario,contrato.fechaInicio,contrato.fechaLiquidacion
+     FROM maquina JOIN mecanico on maquina.mecanicoInspeccionId=mecanico.codigo
+          JOIN contrato on contrato.codigo=mecanico.codigoContrato
+     WHERE maquina.codigo=$codigoMaquina";
 
     // Ejecutar la consulta
     $resultadoB2 = mysqli_query($conn, $query) or die(mysqli_error($conn));
@@ -80,8 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
         <!-- Títulos de la tabla, cambiarlos -->
         <thead class="table-dark">
             <tr>
-                <th scope="col" class="text-center">Código</th>
-                <th scope="col" class="text-center">Tipo</th>
+                <th scope="col" class="text-center">Código mecánico Inspector</th>
+                <th scope="col" class="text-center">Nombre mecánico Inspector</th>
+                <th scope="col" class="text-center">Código contrato</th>
+                <th scope="col" class="text-center">Tipo contrato</th>
                 <th scope="col" class="text-center">Salario</th>
                 <th scope="col" class="text-center">Fecha de inicio</th>
                 <th scope="col" class="text-center">Fecha de liquidación</th>
@@ -98,6 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
             <!-- Fila que se generará -->
             <tr>
                 <!-- Cada una de las columnas, con su valor correspondiente -->
+                 
+                <td class="text-center"><?= $fila["mecanicoInspeccionId"]; ?></td>
+                <td class="text-center"><?= $fila["nombre"]; ?></td>
                 <td class="text-center"><?= $fila["codigo"]; ?></td>
                 <td class="text-center"><?= $fila["tipo"]; ?></td>
                 <td class="text-center">$<?= $fila["salario"]; ?></td>

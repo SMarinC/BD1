@@ -6,11 +6,11 @@ include "../includes/header.php";
 <h1 class="mt-3">Consulta 2</h1>
 
 <p class="mt-3">
-    Sea sumavalor la suma de los valores de todos los proyectos asociados con un cliente.
-    El segundo botón debe mostrar el código y el valor de cada uno de los proyectos 
-    que cumple todas las siguientes condiciones: tiene un valor mayor que el 
-    presupuesto de la empresa que lo revisa y además el cliente que lo revisa es el 
-    gerente de la empresa que lo revisa.
+    Se muestran los mecánicos consultores con contrato asociado que han reparado por lo menos dos máquinas y que no han inspeccionado ninguna máquina
+     <p>Por cada consulta se muestra:</p>
+     <p>-Referente a los datos del mecánico: cédula, nombre y contrato</p> 
+     <p>-Cantidad de reparaciones hechas a máquinas -> debe mostras >=2</p>
+     <p>-Cantidad de inspecciones hechas a máquinas -> debe mostrar 0 </p> 
 </p>
 
 <?php
@@ -18,7 +18,18 @@ include "../includes/header.php";
 require('../config/conexion.php');
 
 // Query SQL a la BD -> Crearla acá (No está completada, cambiarla a su contexto y a su analogía)
-$query = "SELECT codigo, valor FROM proyecto";
+$query = "SELECT mc.codigo,mc.nombre,mc.codigoContrato,
+    COUNT(CASE WHEN mc.codigo=m.mecanicoReparacionId THEN 1 ELSE NULL END) AS maquinas_reparadas,
+    COUNT(CASE WHEN mc.codigo=m.mecanicoInspeccionId THEN 1 ELSE NULL END) AS maquinas_inspeccionadas
+FROM mecanico AS mc, maquina AS m
+WHERE mc.codigoContrato IS NOT NULL
+GROUP BY 
+    mc.codigo,
+    mc.nombre,
+    mc.telefono,
+    mc.especialidad,
+    mc.codigoContrato
+HAVING maquinas_reparadas >=2 AND maquinas_inspeccionadas =0;";
 
 // Ejecutar la consulta
 $resultadoC2 = mysqli_query($conn, $query) or die(mysqli_error($conn));
@@ -39,8 +50,11 @@ if($resultadoC2 and $resultadoC2->num_rows > 0):
         <!-- Títulos de la tabla, cambiarlos -->
         <thead class="table-dark">
             <tr>
-                <th scope="col" class="text-center">Cédula</th>
-                <th scope="col" class="text-center">Nombre</th>
+                <th scope="col" class="text-center">Cédula mecánico</th>
+                <th scope="col" class="text-center">Nombre mecánico</th>
+                <th scope="col" class="text-center">Código contrato</th>
+                <th scope="col" class="text-center">Cantidad de reparaciones a máquinas</th>
+                <th scope="col" class="text-center">Cantidad de inspecciones a máquinas</th>
             </tr>
         </thead>
 
@@ -54,8 +68,11 @@ if($resultadoC2 and $resultadoC2->num_rows > 0):
             <!-- Fila que se generará -->
             <tr>
                 <!-- Cada una de las columnas, con su valor correspondiente -->
-                <td class="text-center"><?= $fila["cedula"]; ?></td>
+                <td class="text-center"><?= $fila["codigo"]; ?></td>
                 <td class="text-center"><?= $fila["nombre"]; ?></td>
+                <td class="text-center"><?= $fila["codigoContrato"]; ?></td>
+                <td class="text-center"><?= $fila["maquinas_reparadas"]; ?></td>
+                <td class="text-center"><?= $fila["maquinas_inspeccionadas"]; ?></td>
             </tr>
 
             <?php

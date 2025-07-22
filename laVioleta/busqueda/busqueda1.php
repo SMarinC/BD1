@@ -63,7 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
     $codigoContrato = $_POST["codigoContrato"];
 
     // Query SQL a la BD -> Crearla acá (No está completada, cambiarla a su contexto y a su analogía) VIOLETAAAAAAAAAAAAAAAAAAAAAA AQUI VA EL QUERY
-    $query = "SELECT * FROM maquina";
+    $query = "SELECT contrato.fechaInicio,contrato.fechaLiquidacion,
+              mecanico.codigo as codigoMecanico,mecanico.nombre as nombreMecanico,
+              maquina.codigo as codigoMaquina,maquina.nombre as nombreMaquina,maquina.fechaUltimaReparacion 
+    FROM contrato JOIN mecanico on contrato.codigo=mecanico.codigoContrato
+    JOIN maquina on maquina.mecanicoReparacionId=mecanico.codigo
+    WHERE contrato.codigo=$codigoContrato 
+          AND NOT (maquina.fechaUltimaReparacion BETWEEN contrato.fechaInicio AND contrato.fechaLiquidacion)";
 
     // Ejecutar la consulta
     $resultadoB1 = mysqli_query($conn, $query) or die(mysqli_error($conn));
@@ -82,16 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
         <!-- Títulos de la tabla, cambiarlos -->
         <thead class="table-dark">
             <tr>
-                <th scope="col" class="text-center">Código</th>
-                <th scope="col" class="text-center">Nombre</th>
-                <th scope="col" class="text-center">Fabricante</th>
-                <th scope="col" class="text-center">Precio</th>
-                <th scope="col" class="text-center">Fecha de adquisición</th>
-                <th scope="col" class="text-center">Descripción</th>
-                <th scope="col" class="text-center">Fecha de inspección</th>
-                <th scope="col" class="text-center">fecha de reparación</th>
-                <th scope="col" class="text-center">Mecanico inspector ID</th>
-                <th scope="col" class="text-center">Mecanico reparador ID</th>
+                <th scope="col" class="text-center">Fecha Inicio contrato</th>
+                <th scope="col" class="text-center">Fecha Liquidación Contrato</th>
+                <th scope="col" class="text-center">Código mecanico</th>
+                <th scope="col" class="text-center">Nombre Mecánico</th>
+                <th scope="col" class="text-center">Código máquina</th>
+                <th scope="col" class="text-center">Nombre máquina</th>
+                <th scope="col" class="text-center">Fecha reparación máquina</th>
+        
             </tr>
         </thead>
 
@@ -105,16 +109,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
             <!-- Fila que se generará -->
             <tr>
                 <!-- Cada una de las columnas, con su valor correspondiente -->
-                <td class="text-center"><?= $fila["codigo"]; ?></td>
-                <td class="text-center"><?= $fila["nombre"]; ?></td>
-                <td class="text-center"><?= $fila["fabricante"]; ?></td>
-                <td class="text-center">$<?= $fila["precio"]; ?></td>
-                <td class="text-center"><?= $fila["fechaAdquisicion"]; ?></td>
-                <td class="text-center"><?= $fila["descripcion"]; ?></td>
-                <td class="text-center"><?= $fila["fechaInspeccion"]; ?></td>
+                <td class="text-center"><?= $fila["fechaInicio"]; ?></td>
+                <td class="text-center"><?= $fila["fechaLiquidacion"]; ?></td>
+                <td class="text-center"><?= $fila["codigoMecanico"]; ?></td>
+                <td class="text-center"><?= $fila["nombreMecanico"]; ?></td>
+                <td class="text-center"><?= $fila["codigoMaquina"]; ?></td>
+                <td class="text-center"><?= $fila["nombreMaquina"]; ?></td>
                 <td class="text-center"><?= $fila["fechaUltimaReparacion"]; ?></td>
-                <td class="text-center"><?= $fila["mecanicoInspeccionId"]; ?></td>
-                <td class="text-center"><?= $fila["mecanicoReparacionId"]; ?></td>
             </tr>
 
             <?php
